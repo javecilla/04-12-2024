@@ -5,8 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc -b && vite build",
-    "preview": "vite preview"
+    "build": "npm run type-check && vite build",
+    "preview": "vite preview",
+    "type-check": "vue-tsc -b",
+    "postinstall": "npm install --platform=linux --arch=x64 @rollup/rollup-linux-x64-gnu || true"
   },
   "dependencies": {
     "aos": "^2.3.4",
