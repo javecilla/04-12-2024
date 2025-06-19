@@ -369,10 +369,7 @@ onUnmounted(() => {
     width: calc(100vw - 2rem);
     max-width: 300px;
     margin-bottom: 8px;
-    margin-left: auto;
-    /* Add margin auto for centering */
-    margin-right: auto;
-    /* Add margin auto for centering */
+    margin-left: 7px !important;
   }
 
   .masonry-grid {

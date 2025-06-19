@@ -67,9 +67,10 @@ onMounted(() => {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.3s ease;
+  transition: all 0.3s ease;
   opacity: 0;
   animation: fadeIn 0.3s ease forwards;
+  filter: grayscale(0%);
 }
 
 @keyframes fadeIn {
@@ -91,30 +92,27 @@ onMounted(() => {
   position: absolute;
   inset: 0;
   background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.3) 50%, transparent 100%);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.album-info {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 1rem;
-  transform: translateY(20px);
-  transition: transform 0.3s ease;
+  opacity: 1;
+    transition: all 0.3s ease;
+  }
+  
+  .album-info {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 1rem;
+    transform: translateY(0);
+    transition: all 0.3s ease;
 }
 
 /* Hover effects */
 .album-card:hover .album-image {
   transform: scale(1.1);
+  filter: grayscale(100%);
 }
 
 .album-card:hover .overlay {
-  opacity: 1;
-}
-
-.album-card:hover .album-info {
-  transform: translateY(0);
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.2) 50%, rgba(0, 0, 0, 0.1) 100%);
 }
 </style>

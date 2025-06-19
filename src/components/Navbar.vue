@@ -9,8 +9,7 @@
       <nav class="relative flex h-16 items-center w-full">
         <!-- Left side - Audio Player -->
         <div class="flex items-center flex-shrink-0">
-          <!-- audio player -->
-          <!-- Background Music -->
+          <!-- audio player --> <!-- Background Music -->
           <audio ref="audioPlayer" loop>
             <source src="/audios/taylor-swift_love-story.mp3" type="audio/mpeg">
             Your browser does not support the audio element.
@@ -101,10 +100,10 @@ const handleScroll = () => {
 
 onMounted(() => {
   window.addEventListener("scroll", handleScroll);
-});
 
-onUnmounted(() => {
+  // Set up audio player
   if (audioPlayer.value) {
+    // Add event listeners for audio state changes
     audioPlayer.value.addEventListener('play', () => {
       isPlaying.value = true;
     });
@@ -114,8 +113,30 @@ onUnmounted(() => {
     audioPlayer.value.addEventListener('ended', () => {
       isPlaying.value = false;
     });
-  }
 
+    // Attempt to auto-play
+    audioPlayer.value.muted = false; // Ensure it's not muted initially
+    audioPlayer.value.play()
+      .then(() => {
+        isPlaying.value = true;
+        console.log('Auto-play started successfully');
+      })
+      .catch(error => {
+        console.log('Auto-play was prevented:', error);
+        // The play() promise was rejected, likely due to browser autoplay policy
+        isPlaying.value = false;
+      });
+  }
+});
+
+onUnmounted(() => {
+  // Remove event listeners
+  if (audioPlayer.value) {
+    audioPlayer.value.pause();
+    audioPlayer.value.removeEventListener('play', () => { });
+    audioPlayer.value.removeEventListener('pause', () => { });
+    audioPlayer.value.removeEventListener('ended', () => { });
+  }
   window.removeEventListener("scroll", handleScroll);
 });
 

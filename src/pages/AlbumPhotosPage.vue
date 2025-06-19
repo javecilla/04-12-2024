@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen bg-white dark:bg-[#2c2c2c]">
     <div class="container mx-auto py-8 px-4">
-      <div class="header-container mb-4">
+      <div class="header-container mb-8">
         <h1 class="page-title text-2xl font-bold text-gray-900 dark:text-white">{{ album?.title }}</h1>
       </div>
       <MasonryGallery :photos="photos" />
@@ -39,6 +39,7 @@ function goBack() {
   text-align: center;
   width: 100%;
   margin-bottom: 2rem;
+  margin-top: 2rem;
 }
 
 .page-title {
