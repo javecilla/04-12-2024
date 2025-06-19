@@ -1,0 +1,192 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+/* Smooth Scroll for the entire application */
+html {
+	scroll-behavior: smooth;
+	overflow-y: auto;
+	overscroll-behavior-y: contain;
+}
+
+:root {
+	font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+	line-height: 1.5;
+	font-weight: 400;
+
+	color-scheme: light dark;
+	color: rgba(255, 255, 255, 0.87);
+	background-color: #242424;
+
+	font-synthesis: none;
+	text-rendering: optimizeLegibility;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+a {
+	font-weight: 500;
+	color: #646cff;
+	text-decoration: inherit;
+}
+a:hover {
+	color: #535bf2;
+}
+
+body {
+	margin: 0;
+	/* Removed: display: flex; place-items: center; */
+	min-width: 320px;
+	min-height: 100vh;
+}
+
+h1 {
+	line-height: 1.1;
+	text-align: center; /* Add this to ensure headers are centered by default */
+}
+
+button {
+	font-family: inherit;
+	cursor: pointer;
+	transition: all 0.25s;
+}
+
+#app {
+	width: 100%;
+	margin: 0 auto;
+	/* text-align: center; */
+}
+
+@media (prefers-color-scheme: light) {
+	:root {
+		color: #213547;
+		background-color: #ffffff;
+	}
+	a:hover {
+		color: #747bff;
+	}
+	button {
+		background-color: #f9f9f9;
+	}
+}
+
+/*Global custom style*/
+.heart-cursor {
+	cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z'%3E%3C/path%3E%3C/svg%3E")
+			12 12,
+		pointer !important;
+}
+
+.content-center {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+
+/*Poppins Font*/
+.poppins-thin {
+	font-family: 'Poppins', sans-serif;
+	font-weight: 100;
+	font-style: normal;
+}
+
+.poppins-extralight {
+	font-family: 'Poppins', sans-serif;
+	font-weight: 200;
+	font-style: normal;
+}
+
+.poppins-light {
+	font-family: 'Poppins', sans-serif;
+	font-weight: 300;
+	font-style: normal;
+}
+
+.poppins-regular {
+	font-family: 'Poppins', sans-serif;
+	font-weight: 400;
+	font-style: normal;
+}
+
+.poppins-medium {
+	font-family: 'Poppins', sans-serif;
+	font-weight: 500;
+	font-style: normal;
+}
+
+.poppins-semibold {
+	font-family: 'Poppins', sans-serif;
+	font-weight: 600;
+	font-style: normal;
+}
+
+.poppins-bold {
+	font-family: 'Poppins', sans-serif;
+	font-weight: 700;
+	font-style: normal;
+}
+
+.poppins-extrabold {
+	font-family: 'Poppins', sans-serif;
+	font-weight: 800;
+	font-style: normal;
+}
+
+.poppins-black {
+	font-family: 'Poppins', sans-serif;
+	font-weight: 900;
+	font-style: normal;
+}
+
+.poppins-thin-italic {
+	font-family: 'Poppins', sans-serif;
+	font-weight: 100;
+	font-style: italic;
+}
+
+.poppins-extralight-italic {
+	font-family: 'Poppins', sans-serif;
+	font-weight: 200;
+	font-style: italic;
+}
+
+.poppins-light-italic {
+	font-family: 'Poppins', sans-serif;
+	font-weight: 300;
+	font-style: italic;
+}
+
+.poppins-regular-italic {
+	font-family: 'Poppins', sans-serif;
+	font-weight: 400;
+	font-style: italic;
+}
+
+.poppins-medium-italic {
+	font-family: 'Poppins', sans-serif;
+	font-weight: 500;
+	font-style: italic;
+}
+
+.poppins-semibold-italic {
+	font-family: 'Poppins', sans-serif;
+	font-weight: 600;
+	font-style: italic;
+}
+
+.poppins-bold-italic {
+	font-family: 'Poppins', sans-serif;
+	font-weight: 700;
+	font-style: italic;
+}
+
+.poppins-extrabold-italic {
+	font-family: 'Poppins', sans-serif;
+	font-weight: 800;
+	font-style: italic;
+}
+
+.poppins-black-italic {
+	font-family: 'Poppins', sans-serif;
+	font-weight: 900;
+	font-style: italic;
+}
