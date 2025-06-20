@@ -16,7 +16,7 @@
 
 <script lang="ts" setup>
 import { useRoute, useRouter } from 'vue-router';
-import { computed } from 'vue';
+import { computed, watch, onMounted, onUnmounted } from 'vue';
 import { useGalleryStore } from '../stores/gallery';
 import MasonryGallery from '../components/MasonryGallery.vue';
 import { ArrowLeftCircle } from 'lucide-vue-next';
@@ -32,6 +32,26 @@ const photos = computed(() => galleryStore.getPhotosByAlbumId(albumId.value));
 function goBack() {
   router.push({ name: 'AlbumList' });
 }
+
+const defaultTitle = '04122024';
+
+onMounted(() => {
+  if (album.value?.title) {
+    document.title = album.value.title + ' | ' + defaultTitle;
+  }
+});
+
+watch(album, (newAlbum) => {
+  if (newAlbum?.title) {
+    document.title = newAlbum.title + ' | ' + defaultTitle;
+  } else {
+    document.title = defaultTitle;
+  }
+});
+
+onUnmounted(() => {
+  document.title = defaultTitle;
+});
 </script>
 
 <style scoped>
