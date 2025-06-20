@@ -28,7 +28,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-white dark:bg-[#2c2c2c] text-[#2c2c2c] dark:text-white">
+  <div class="min-h-screen bg-[#2c2c2c] text-white">
     <!-- Loading Overlay -->
     <Transition enter-active-class="transition-opacity duration-300" leave-active-class="transition-opacity duration-500" enter-from-class="opacity-0" leave-to-class="opacity-0">
       <div v-if="isLoading" class="fixed inset-0 bg-[#2c2c2c] z-50 flex items-center justify-center">
@@ -91,9 +91,7 @@ onMounted(() => {
   border: transparent;
 }
 
-@media (prefers-color-scheme: dark) {
-  ::-webkit-scrollbar-thumb {
-    background-color: rgba(255, 255, 255, 0.2);
-  }
+::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.2);
 }
 </style>
