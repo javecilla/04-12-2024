@@ -1,57 +1,30 @@
-# Vue 3 + TypeScript + Vite
+# Gallery Website
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+Welcome to our little corner of the internet  a digital gallery that showcases moments, memories, and creations that mean the world to us.
 
-Learn more about the recommended Project Setup and IDE Support in the [Vue Docs TypeScript Guide](https://vuejs.org/guide/typescript/overview.html#project-setup).
+This website features visual content like images and videos, thoughtfully arranged to reflect both artistry and emotion. More than just a gallery, it’s a shared space a canvas that holds pieces of our story.
 
-# 04122024 Gallery SPA
+It’s filled with content inspired by me and my girlfriend  from the meaningful to the mundane — and serves as our personal archive of love, laughter, and the beautiful chaos we’ve captured together.
 
-A modern, mobile-friendly photo gallery web app built with Vue 3, TypeScript, Pinia, Vue Router, and Tailwind CSS.
+## Technologies Used
 
-## Features
-
-- Album listing with cover photos
-- Click an album to view all photos in a beautiful masonry layout
-- Responsive and mobile-friendly
-- Smooth SPA navigation
-- Aesthetic color palette
-
-## Color Palette
-
-- **Primary:** `#fb5835`
-- **Background:** `#ffffff`
-- **Dark:** `#2c2c2c`
-
-## Tech Stack
+A modern, mobile-friendly photo gallery web app built with Vue 3, TypeScript, and Tailwind CSS.
 
 - Vue 3 + TypeScript
 - Pinia (state management)
 - Vue Router (SPA navigation)
-- Tailwind CSS (utility-first styling)
+- Tailwind CSS
 
-## Folder Structure
+## Demo
 
-```
-public/images/
-  albums-cover-photo/   # Album cover images (one per album, in a subfolder)
-  photos-in-album/      # Photos for each album (subfolder per album)
-```
+You can try the live demo [https://04122024.vercel.app/](https://04122024.vercel.app/)
 
-## Adding Albums & Photos
+## Contact
 
-1. Add a new folder in `public/images/albums-cover-photo/` for the album, and place a cover image inside.
-2. Add a folder with the same name in `public/images/photos-in-album/` and put all related photos there.
-3. Update `src/stores/gallery.ts` to add the new album and map its photos.
+- Portfolio: [jerome-avecilla.vercel.app](https://jerome-avecilla.vercel.app/)
+- Email: jeromesavc@gmail.com
+- GitHub: [@javecilla](https://github.com/javecilla)
 
-## Getting Started
+## License
 
-```bash
-npm install
-npm run dev
-```
-
-Visit [http://localhost:5173](http://localhost:5173) to view the app.
-
----
-
-Inspired by modern, aesthetic gallery designs.
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
