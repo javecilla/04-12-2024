@@ -3,6 +3,7 @@
     <div class="container mx-auto py-8 px-4">
       <div class="header-container mb-8">
         <h1 class="page-title text-2xl font-bold text-gray-900 dark:text-white">{{ album?.title }}</h1>
+        <p class="page-description">{{  album?.description }}</p>
       </div>
       <MasonryGallery :photos="photos" />
 
@@ -30,7 +31,7 @@ const album = computed(() => galleryStore.getAlbumById(albumId.value));
 const photos = computed(() => galleryStore.getPhotosByAlbumId(albumId.value));
 
 function goBack() {
-  router.push({ name: 'AlbumList' });
+  router.push({ name: 'Home' });
 }
 
 const defaultTitle = '04122024';
@@ -56,6 +57,10 @@ onUnmounted(() => {
 
 <style scoped>
 .header-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   text-align: center;
   width: 100%;
   margin-bottom: 2rem;
@@ -64,6 +69,10 @@ onUnmounted(() => {
 
 .page-title {
   margin: 0;
+}
+
+.page-description {
+  max-width: 700px;
 }
 
 .floating-back-button {

@@ -1,118 +1,232 @@
 <template>
-  <div class="album-card heart-cursor" @click="$emit('click')">
-    <div class="album-content">
-      <SkeletonLoader v-if="isLoading" />
-      <img :src="album.cover" :alt="album.title" class="album-image" loading="lazy" @load="onImageLoaded" @error="onImageError" data-aos="fade-up" data-aos-duration="300" data-aos-delay="10" data-aos-offset="20" data-aos-once="false" />
-      <div class="overlay" v-show="!isLoading">
-        <div class="album-info">
-          <h2 class="album-title text-lg font-semibold text-white mb-1">{{ album.title }}</h2>
-        </div>
+  <template v-if="album.category === 'specific'">
+    <div class="album-card specific" @click="$emit('click')">
+      <span v-if="album.date" class="album-label specific">{{ album.date }}</span>
+      <div class="album-image-container specific">
+        <SkeletonLoader v-if="isLoading" />
+        <img :src="album.cover" :alt="album.title" class="album-image" loading="lazy" @load="onImageLoaded" @error="onImageError" />
+      </div>
+      <div class="album-info specific">
+        <span class="album-subtitle specific">{{ album.subtitle }}</span>
+        <h3 class="poppins-semibold album-title specific">{{ album.title }}</h3>
+        <p class="poppins-regular album-description specific" v-if="album.description">{{ album.description }}</p>
       </div>
     </div>
-  </div>
+  </template>
+  <template v-if="album.category === 'favorite'">
+    <div class="album-card favorite" @click="$emit('click')">
+      <span v-if="album.date" class="album-label favorite">{{ album.date }}</span>
+      <div class="album-info favorite">
+        <h3 class="poppins-regular album-title favorite">{{ album.title }}</h3>
+        <p class="poppins-regular album-description favorite" v-if="album.description">{{ album.description }}</p>
+        <span class="album-subtitle favorite">{{ album.subtitle }}</span>
+      </div>
+      <div class="album-image-container favorite">
+        <SkeletonLoader v-if="isLoading" />
+        <img :src="album.cover" :alt="album.title" class="album-image" loading="lazy" @load="onImageLoaded" @error="onImageError" />
+      </div>
+    </div>
+  </template>
+  <template v-if="album.category === 'general'">
+    <div class="album-card general" @click="$emit('click')">
+      <div class="album-image-container general">
+        <SkeletonLoader v-if="isLoading" />
+        <img :src="album.cover" :alt="album.title" class="album-image general" loading="lazy" @load="onImageLoaded" @error="onImageError" />
+      </div>
+      <div class="album-info general">
+        <span class="album-subtitle general">{{ album.subtitle }}</span>
+        <p class="poppins-regular album-description general" v-if="album.description">{{ album.description }}</p>
+      </div>
+    </div>
+  </template>
+  <template v-if="album.category === 'nostalgic'">
+    <div class="album-card nostalgic" @click="$emit('click')">
+      <div class="album-info nostalgic">
+        <h3 class="poppins-regular album-title nostalgic">{{ album.title }}</h3>
+        <p class="poppins-regular album-description nostalgic" v-if="album.description">{{ album.description }}</p>
+      </div>
+      <div class="album-image-container nostalgic">
+        <SkeletonLoader v-if="isLoading" />
+        <img :src="album.cover" :alt="album.title" class="album-image" loading="lazy" @load="onImageLoaded" @error="onImageError" />
+      </div>
+    </div>
+  </template>
 </template>
 
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue';
 import SkeletonLoader from './SkeletonLoader.vue';
-import AOS from 'aos';
 import 'aos/dist/aos.css';
 
-defineProps<{ album: { id: string; title: string; cover: string; description?: string } }>();
+// Define the Album interface to match your store
+interface Album {
+  id: string;
+  category: string;
+  date?: string;
+  title: string;
+  subtitle?: string;
+  cover: string;
+  description?: string;
+}
+
+const props = defineProps<{
+  album: Album;
+}>();
+
+// Emit events
+const emit = defineEmits<{
+  click: [];
+  'image-loaded': [];
+}>();
 
 const isLoading = ref(true);
 
 function onImageLoaded() {
   isLoading.value = false;
-  // Refresh AOS after masonry layout updates
-  AOS.refresh();
+  emit('image-loaded'); // Let parent know image has loaded
 }
 
 function onImageError() {
   isLoading.value = false;
-  // You could set a fallback image here if needed
+  console.warn(`Failed to load image: ${props.album.cover}`);
+  emit('image-loaded'); // Still emit to prevent layout from waiting indefinitely
 }
 
 onMounted(() => {
-  // Initialize AOS for animations
-  AOS.init({
-    once: true,
-    mirror: false,
-    startEvent: 'load',
-    offset: 150,
-    duration: 1000,
-    easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
-    anchorPlacement: 'bottom-bottom'
-  });
+  // Parent component (AlbumList) handles AOS initialization.
 });
 </script>
 
 <style scoped>
 .album-card {
-  aspect-ratio: 1;
-  width: 100%;
-  overflow: hidden;
-  border-radius: 0.5rem;
-  background-color: #f3f4f6;
+  border-radius: 1.5rem;
+  /* 16px */
+  padding: 1rem;
+  /* 16px */
+  color: white;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
   cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
 }
 
-.album-content {
+.album-card.specific {
+  background-color: #1c1c1e;
+}
+.album-card.favorite {
+  background-color: transparent;
+}
+.album-card.nostalgic {
+  background-color: transparent;
+}
+
+.album-card.specific:hover {
+  padding: 1.02rem;
+  border-radius: 2rem;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+  color: #f3f3f3;
+}
+.album-card.favorite:hover {
+  background-color: #1c1c1e;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+  color: #f3f3f3;
+}
+.album-card.nostalgic:hover {
+  background-color: #1c1c1e;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+  color: #f3f3f3;
+}
+.album-card.general:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+}
+
+.album-label {
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: #f3f3f3;
+}
+
+.album-image-container {
   position: relative;
   width: 100%;
   height: 100%;
+  border-radius: 1.5rem;
+  /* 8px */
+  overflow: hidden;
+  background-color: #2c2c2e;
+}
+.album-image-container.specific {
+  aspect-ratio: 1; /* Make it a square */
+}
+.album-image-container.favorite {
+  aspect-ratio: 1;
+}
+.album-image-container.nostalgic {
+  background-color: transparent!important;
+}
+
+.album-image-container.general {
+  /* make it rectangle */
+  aspect-ratio: 4 / 3!important;
 }
 
 .album-image {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: all 0.3s ease;
-  opacity: 0;
-  animation: fadeIn 0.3s ease forwards;
-  filter: grayscale(0%);
+  height: 100%; /* Fill the container */
+  object-fit: cover; /* Cover the area, crop if needed */
+  display: block;
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
+.album-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
 
-  to {
-    opacity: 1;
-  }
+.album-subtitle {
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  color: #b0b0b0;
 }
 
 .album-title {
-  text-align: left !important;
-  margin-bottom: 3px;
+  margin: 0;
+}
+.album-title.specific {
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+.album-title.favorite {
+  font-size: 2.5rem;
+  line-height: 1;
+}
+.album-title.nostalgic {
+  font-size: 2.5rem;
+  line-height: 1;
 }
 
-.overlay {
+.album-description {
+  font-size: 0.9rem;
+  line-height: 1.2;
+  margin: 10px 0 0 0;
+}
+
+.album-description.favorite {
+  text-transform: uppercase;
+}
+
+.album-image-container .skeleton-loader {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.3) 50%, transparent 100%);
-  opacity: 1;
-    transition: all 0.3s ease;
-  }
-  
-  .album-info {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    padding: 1rem;
-    transform: translateY(0);
-    transition: all 0.3s ease;
-}
-
-/* Hover effects */
-.album-card:hover .album-image {
-  transform: scale(1.1);
-  filter: grayscale(100%);
-}
-
-.album-card:hover .overlay {
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.2) 50%, rgba(0, 0, 0, 0.1) 100%);
+  width: 100%;
+  height: 100%;
 }
 </style>

@@ -6,7 +6,7 @@
     'dark:border-zinc-800/50 border-gray-200/50',
   ]">
     <div class="container mx-auto px-4">
-      <nav class="relative flex h-16 items-center w-full">
+      <nav class="nav-container relative flex h-16 items-center w-full">
         <!-- Left side - Audio Player -->
         <div class="flex items-center flex-shrink-0">
           <!-- audio player --> <!-- Background Music -->
@@ -160,14 +160,30 @@ svg {
   transition: all 0.3s ease;
 }
 
+.nav-container {
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .nav-container {
+    max-width: 640px;
+  }
+}
+
+@media (min-width: 768px) {
+  .nav-container {
+    max-width: 768px;
+  }
+}
 /* only applied this only large screen */
-@media (min-width: 1024px) {
+/* @media (min-width: 1024px) {
   nav {
     padding-left: 80px !important;
     padding-right: 80px !important;
   }
 }
 
+*/
 
 /* Ensure flexbox behavior */
 .flex {

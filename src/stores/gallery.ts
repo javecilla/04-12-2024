@@ -3,7 +3,10 @@ import { defineStore } from 'pinia';
 // Album and photo data structure
 interface Album {
   id: string;
-  title: string;
+  category: string;
+  date?: string;
+  title?: string;
+  subtitle?: string;
   cover: string;
   description?: string;
 }
@@ -17,89 +20,143 @@ interface Photo {
 // Hardcoded data based on the folder structure
 const albums: Album[] = [
   {
-    id: 'my-home',
-    title: 'My Home',
-    cover: '/images/albums-cover-photo/my-home/2025-05-22_02-46-484.jpg',
-    description: 'Memories at home.'
+    id: 'fav-spot-at-high-cafe',
+    category: 'specific',
+    date: 'May 2025',
+    title: 'Where time slows down and love stays warm',
+    subtitle: 'Fav Spot at High Cafe',
+    cover: '/images/albums-cover-photo/fav-spot-at-high-cafe/2025-05-22_22-10-2061.jpg',
   },
   {
     id: 'ramen-and-photo-booth-at-sm',
-    title: 'Ramen & Photo Booth at SM',
+    category: 'favorite',
+    date: 'Sep 2024',
+    title: 'Two spoons, four photos, one memory',
+    subtitle: 'Ramen & Photo Booth at SM',
     cover: '/images/albums-cover-photo/ramen-and-photo-booth-at-sm/2024-08-07_07-19-267.jpg',
-    description: 'Fun at SM with ramen and photos.'
-  },
-  {
-    id: 'his-project-on-the-rainy-day',
-    title: 'His Project on the Rainy Day',
-    cover: '/images/albums-cover-photo/his-project-on-the-rainy-day/2025-03-07_19-33-078.jpg',
-    description: 'A rainy day project.'
-  },
-  {
-    id: 'valentines-day',
-    title: 'Valentine\'s Day',
-    cover: '/images/albums-cover-photo/valentines-day/2025-02-14_02-27-278.jpg',
-    description: 'Special moments on Valentine\'s.'
-  },
-  {
-    id: 'random-food-dates',
-    title: 'Random Food Dates',
-    cover: '/images/albums-cover-photo/random-food-dates/2024-08-07_07-20-44.jpg',
-    description: 'Tasty adventures.'
-  },
-  {
-    id: 'bonding-in-the-pool',
-    title: 'Bonding in the Pool',
-    cover: '/images/albums-cover-photo/bonding-in-the-pool/2025-05-30_08-11-0314.jpg',
-    description: 'Poolside fun.'
   },
   {
     id: 'our-first-museum-date',
-    title: 'Our First Museum Date',
+    category: 'specific',
+    date: 'Sep 2024',
+    title: 'Modern art. Classic chemistry.',
+    subtitle: 'Our First Museum Date',
     cover: '/images/albums-cover-photo/our-first-museum-date/2024-09-15_01-42-5527.jpg',
-    description: 'Exploring art together.'
+    description: 'A soft start to something timeless, under skylights and sculptures. We wandered through brushstrokes and installations, trading quiet smiles and thoughts louder than the galleries allowed. Somewhere between abstract and realism, we found a rhythm one that felt like us.'
   },
   {
-    id: 'first-date',
-    title: 'First Date',
-    cover: '/images/albums-cover-photo/first-date/2024-08-07_07-24-38.jpg',
-    description: 'Our very first date.'
+    id: 'valentines-day',
+    category: 'favorite',
+    date: 'Feb 2025',
+    title: 'A Valentine spent the way it should be just us',
+    subtitle: 'Valentine\'s Day',
+    cover: '/images/albums-cover-photo/valentines-day/2025-02-14_02-27-278.jpg',
+    description: 'A day of soft glances, handwritten notes, and slow moments. We didn’t need grand gestures just a little time, a little chocolate, and a lot of love in every shared look.'
   },
   {
-    id: 'after-christmas-day',
-    title: 'After Christmas Day',
-    cover: '/images/albums-cover-photo/after-christmas-day/2024-12-26_06-49-445.jpg',
-    description: 'Post-Christmas memories.'
+    id: 'my-home',
+    category: 'favorite',
+    date: 'Mar 2025',
+    title: 'Where You Are is Home',
+    subtitle: 'My Home',
+    cover: '/images/albums-cover-photo/my-home/2025-05-22_02-46-484.jpg',
   },
   {
-    id: 'fav-spot-at-high-cafe',
-    title: 'Fav Spot at High Cafe',
-    cover: '/images/albums-cover-photo/fav-spot-at-high-cafe/2025-05-22_22-10-2061.jpg',
-    description: 'Chilling at our favorite cafe.'
-  },
-  {
-    id: 'coffee-date',
-    title: 'Coffee Date',
-    cover: '/images/albums-cover-photo/coffee-date/2025-05-22_00-55-2426.jpg',
-    description: 'Coffee moments.'
-  },
-  {
-    id: 'milk-tea-with-my-baby',
-    title: 'Milk Tea with My Baby',
-    cover: '/images/albums-cover-photo/milk-tea-with-my-baby/2025-06-16-2110254.png',
-    description: 'Milk tea time.'
-  },
-  {
-    id: 'concerts',
-    title: 'Concerts',
-    cover: '/images/albums-cover-photo/concerts/2025-04-20_09-40-175.jpg',
-    description: 'Live music memories.'
+    id: 'bonding-in-the-pool',
+    category: 'specific',
+    date: 'Apr 2025',
+    title: 'The water was calm, but we were closer than ever',
+    subtitle: 'Bonding in the Pool',
+    cover: '/images/albums-cover-photo/bonding-in-the-pool/2025-05-30_08-11-0314.jpg',
+    description: 'Something about pools and peace. No phones, no rush just time to float, talk, and stay in the moment.'
   },
   {
     id: 'enchanted-kingdom-date',
-    title: 'Enchanted Kingdom Date',
+    category: 'favorite',
+    date: 'Sep 2024',
+    title: 'Magic, Screams & Holding Hands',
+    subtitle: 'Enchanted Kingdom Date',
     cover: '/images/albums-cover-photo/enchanted-kingdom-date/2024-09-15_01-43-00z36.jpg',
-    description: 'A magical day.'
-  }
+  },
+  {
+    id: 'milk-tea-with-my-baby',
+    category: 'specific',
+    date: 'Jun 2025',
+    title: 'Milk tea, shared laughs, and stolen sips',
+    subtitle: 'Milk Tea with My Baby',
+    cover: '/images/albums-cover-photo/milk-tea-with-my-baby/2025-06-16-2110254.png',
+  },
+  {
+    id: 'his-project-on-the-rainy-day',
+    category: 'specific',
+    date: 'Apr 2025',
+    title: 'Where work meets warmth',
+    subtitle: 'His Project on the Rainy Day',
+    cover: '/images/albums-cover-photo/his-project-on-the-rainy-day/2025-03-07_19-33-078.jpg',
+    description: 'The world outside was soaked and gray, but inside, it was soft. While he worked on his project, I watched the rain and him both steady, both calming. Sometimes love looks like silence, shared space, and coffee cooling slowly beside us.'
+  },
+  {
+    id: 'random-food-dates',
+    category: 'general',
+    date: 'Aug 2024',
+    title: 'Bites, Cravings & Cracked Jokes',
+    subtitle: 'Random Food Dates',
+    cover: '/images/albums-cover-photo/random-food-dates/2024-08-07_07-20-44.jpg',
+    description: 'We didn’t plan these just followed our cravings and ended up somewhere delicious, laughing too much, sharing too many bites, and saying “this place is our new fave” for the tenth time. It’s never just about the food it’s about the feeling.'
+  },
+  {
+    id: 'first-date',
+    category: 'favorite',
+    date: 'Aug 2024',
+    title: 'That one dinner that rewrote everything',
+    subtitle: 'First Date',
+    cover: '/images/albums-cover-photo/first-date/2024-08-07_07-24-38.jpg',
+    description: 'It started with nervous laughs, unsure words, and the kind of butterflies that only come when something big is about to begin. We didn’t know it then, but this was the first chapter of *us* and we’ve been writing the story ever since.'
+  },
+  {
+    id: 'after-christmas-day',
+    category: 'specific',
+    date: 'Dec 2024',
+    title: 'After the cheer, just us and the glow',
+    subtitle: 'After Christmas Day',
+    cover: '/images/albums-cover-photo/after-christmas-day/2024-12-26_06-49-445.jpg',
+  },
+  {
+    id: 'concerts',
+    category: 'general',
+    date: 'Apr 2025',
+    title: 'In the Noise, Just Us',
+    subtitle: 'Concerts',
+    cover: '/images/albums-cover-photo/concerts/2025-04-20_09-40-175.jpg',
+    description: 'Surrounded by strangers, but all that mattered was us. The bass hit, the lights flared, and between every chorus, we held onto each other like the whole night was written just for us. That’s the magic of live music and loving someone through it.'
+  },
+  {
+    id: 'photo-dump-2020',
+    category: 'nostalgic',
+    date: 'May 2020',
+    title: 'Quarantine Photo Dump 2020',
+    subtitle: 'Quarantine, but make it ours',
+    cover: '/images/albums-cover-photo/photo-dump-2020/2025-06-21_20-21-34.png',
+    description: 'The world hit pause, but somehow we pressed play. We found our own little universe in secret meetups, long talks, and laughter tucked into quiet corners. We didn’t need much just each other, some rain, and all the time in the world to be soft and silly together. Blurry photos, half-smiles, inside jokes they’re all pieces of that secret happiness.'
+  },
+  {
+    id: 'coffee-date',
+    category: 'favorite',
+    date: 'May 2025',
+    title: 'Where conversations brewed slow and hearts stayed close',
+    subtitle: 'Coffee Date',
+    cover: '/images/albums-cover-photo/coffee-date/2025-05-22_00-55-2426.jpg',
+    description: 'It wasn’t just about the coffee—it was the way you looked at me over the rim of your cup, the way time slowed down between sips, and how a simple table for two felt like the safest place in the world.'
+  },
+  {
+    id: 'milk-tea-with-my-baby',
+    category: 'specific',
+    date: 'Jun 2024',
+    title: 'Shared Sips & Sweet Looks',
+    subtitle: 'Milk Tea with My Baby',
+    cover: '/images/albums-cover-photo/milk-tea-with-my-baby/2025-06-16-2110254.png',
+    description: 'Our go-to comfort. One drink, two straws, and the kind of conversation that lingers longer than the ice melts. These are the softest memories the small, sweet pauses in between everything else.'
+  },
 ];
 
 // Helper to generate photos for each album
@@ -699,6 +756,18 @@ function getPhotosByAlbumId(albumId: string): Photo[] {
       { src: '/images/photos-in-album/valentines-day/2025-02-14_02-27-2713.jpg', albumId },
       { src: '/images/photos-in-album/valentines-day/2025-02-14_02-27-2714.jpg', albumId },
       { src: '/images/photos-in-album/valentines-day/2025-02-14_02-27-2715.jpg', albumId },
+    ],
+    'photo-dump-2020': [
+      { src: '/images/photos-in-album/photo-dump-2020/2025-06-21_20-21-341.jpg', albumId },
+      { src: '/images/photos-in-album/photo-dump-2020/2025-06-21_20-21-342.jpg', albumId },
+      { src: '/images/photos-in-album/photo-dump-2020/2025-06-21_20-21-343.jpg', albumId },
+      { src: '/images/photos-in-album/photo-dump-2020/2025-06-21_20-21-344.jpg', albumId },
+      { src: '/images/photos-in-album/photo-dump-2020/2025-06-21_20-21-345.jpg', albumId },
+      { src: '/images/photos-in-album/photo-dump-2020/2025-06-21_20-21-346.jpg', albumId },
+      { src: '/images/photos-in-album/photo-dump-2020/2025-06-21_20-21-347.jpg', albumId },
+      { src: '/images/photos-in-album/photo-dump-2020/2025-06-21_20-21-348.jpg', albumId },
+      { src: '/images/photos-in-album/photo-dump-2020/2025-06-21_20-21-349.jpg', albumId },
+      { src: '/images/photos-in-album/photo-dump-2020/2025-06-21_20-21-3410.png', albumId },
     ],
   };
   return photoMap[albumId] || [];

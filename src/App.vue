@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue';
 import BookLoader from './components/BookLoader.vue';
-import Navbar from './components/Navbar.vue';
+// import Navbar from './components/Navbar.vue';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 
@@ -28,10 +28,10 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-[#2c2c2c] text-white">
+  <div class="min-h-screen bg-[#000000] text-white">
     <!-- Loading Overlay -->
     <Transition enter-active-class="transition-opacity duration-300" leave-active-class="transition-opacity duration-500" enter-from-class="opacity-0" leave-to-class="opacity-0">
-      <div v-if="isLoading" class="fixed inset-0 bg-[#2c2c2c] z-50 flex items-center justify-center">
+      <div v-if="isLoading" class="fixed inset-0 bg-[#000000] z-50 flex items-center justify-center">
         <BookLoader />
       </div>
     </Transition>
@@ -41,7 +41,7 @@ onMounted(() => {
       <Transition enter-active-class="transition-opacity duration-500" enter-from-class="opacity-0" enter-to-class="opacity-100">
         <div v-show="!isLoading">
           <!-- Navbar -->
-          <Navbar />
+          <!-- <Navbar /> -->
 
           <!-- Main Content -->
           <main class="pt-20">

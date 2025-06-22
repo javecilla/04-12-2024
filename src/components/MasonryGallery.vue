@@ -24,13 +24,12 @@ interface MasonryInstance {
   layout(): void;
   destroy(): void;
   reloadItems(): void;
-  appended(elements: Element[]): void;
 }
 
 declare global {
   interface Window {
     Masonry: new (element: Element, options: any) => MasonryInstance;
-    imagesLoaded: (element: Element, callback: () => void) => void;
+    imagesLoaded: (element: Element, callback: (instance: any) => void) => any;
   }
 }
 
