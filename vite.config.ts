@@ -50,6 +50,13 @@ export default defineConfig({
         ],
       },
       webp: { quality: 80, method: 6 },
+      // Exclude problematic files from optimization
+      exclude: [
+        'icon.svg',
+        'favicon.ico',
+        '*.ico',
+        '*.svg'
+      ]
     }),
   ],
   resolve: {
