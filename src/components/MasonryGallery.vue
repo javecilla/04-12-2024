@@ -4,18 +4,47 @@
       <div class="loading-spinner"></div>
       <p class="loading-text">Loading the photos...</p>
     </div>
+    
+    <!-- Masonry Grid Layout - Always render the container -->
     <div ref="masonryContainer" class="masonry-grid" :class="{ 'masonry-loaded': isLoaded }">
       <div v-for="(photo, index) in randomizedPhotos" :key="photo.src" class="masonry-item" :class="{ 'item-loaded': loadedImages.has(index) }" data-aos="fade-up" data-aos-duration="300" data-aos-delay="10" data-aos-offset="20" data-aos-once="false">
         <SkeletonLoader v-if="!loadedImages.has(index)" class="skeleton-loader" />
-        <img :src="photo.src" :alt="photo.alt" class="gallery-image heart-cursor" :class="{ 'image-loaded': loadedImages.has(index) }" loading="lazy" @load="onImageLoad($event, index)" @error="onImageError(index)" />
+        <img 
+          :src="photo.src" 
+          :alt="photo.alt" 
+          class="gallery-image heart-cursor" 
+          :class="{ 'image-loaded': loadedImages.has(index) }" 
+          loading="lazy" 
+          decoding="async"
+          @load="onImageLoad($event, index)" 
+          @error="onImageError(index)" 
+        />
+      </div>
+    </div>
+
+    <!-- Fallback Grid (if Masonry fails) -->
+    <div v-if="!masonryLoaded && !isLoading && !isLoaded" class="fallback-grid">
+      <div v-for="(photo, index) in randomizedPhotos" :key="photo.src" class="fallback-item" data-aos="fade-up" data-aos-duration="300" data-aos-delay="10" data-aos-offset="20" data-aos-once="false">
+        <SkeletonLoader v-if="!loadedImages.has(index)" class="skeleton-loader" />
+        <img 
+          :src="photo.src" 
+          :alt="photo.alt" 
+          class="gallery-image heart-cursor" 
+          :class="{ 'image-loaded': loadedImages.has(index) }" 
+          loading="lazy" 
+          decoding="async"
+          @load="onImageLoad($event, index)" 
+          @error="onImageError(index)" 
+        />
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, onUnmounted, nextTick, watch, computed } from 'vue';
+import { ref, onMounted, onUnmounted, nextTick, watch } from 'vue';
 import SkeletonLoader from './SkeletonLoader.vue';
+import { useGalleryPerformance } from '../composables/useGalleryPerformance';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 
@@ -41,8 +70,11 @@ const masonryContainer = ref<HTMLElement | null>(null);
 const masonryInstance = ref<MasonryInstance | null>(null);
 const loadedImages = ref(new Set<number>());
 const isLoaded = ref(false);
-const loadedCount = ref(0);
-const shuffledPhotos = ref<typeof props.photos>([]);
+const masonryLoaded = ref(false);
+const isLoading = ref(false);
+
+// Use performance tracking
+const { trackImageLoad, setTotalImages } = useGalleryPerformance();
 
 // Function to shuffle array using Fisher-Yates algorithm
 function shuffleArray<T>(array: T[]): T[] {
@@ -55,24 +87,30 @@ function shuffleArray<T>(array: T[]): T[] {
 }
 
 // Computed property that returns randomized photos
-const randomizedPhotos = computed(() => {
-  return shuffledPhotos.value.length > 0 ? shuffledPhotos.value : props.photos;
-});
+const randomizedPhotos = ref<typeof props.photos>([]);
 
 const masonryOptions = {
   itemSelector: '.masonry-item',
   columnWidth: '.masonry-item',
   gutter: 16,
-  percentPosition: false, // Changed to false for better centering
-  transitionDuration: '0.3s',
+  percentPosition: true,
   resize: true,
-  initLayout: false, // We'll trigger layout manually after images load
-  horizontalOrder: true // Keep items in order
+  initLayout: false
 };
 
 const initMasonry = () => {
-  if (!masonryContainer.value || !window.Masonry) {
-    console.error('Masonry container or library not available');
+  console.log('initMasonry called');
+  console.log('Container:', masonryContainer.value);
+  console.log('Masonry available:', typeof window.Masonry !== 'undefined');
+  console.log('imagesLoaded available:', typeof window.imagesLoaded !== 'undefined');
+  
+  if (!masonryContainer.value) {
+    console.error('Masonry container not available');
+    return;
+  }
+  
+  if (!window.Masonry) {
+    console.error('Masonry library not available');
     return;
   }
 
@@ -81,23 +119,30 @@ const initMasonry = () => {
     masonryInstance.value.destroy();
   }
 
+  console.log('Creating Masonry instance...');
   // Create new Masonry instance
   masonryInstance.value = new window.Masonry(masonryContainer.value, masonryOptions);
+  console.log('Masonry instance created');
 
   // Wait for images to load, then layout
   if (window.imagesLoaded) {
+    console.log('Using imagesLoaded to wait for images...');
     window.imagesLoaded(masonryContainer.value, () => {
+      console.log('All images loaded, calling layout...');
       if (masonryInstance.value) {
         masonryInstance.value.layout();
         isLoaded.value = true;
+        masonryLoaded.value = true;
       }
     });
   } else {
+    console.log('imagesLoaded not available, using timeout fallback...');
     // Fallback if imagesLoaded is not available
     setTimeout(() => {
       if (masonryInstance.value) {
         masonryInstance.value.layout();
         isLoaded.value = true;
+        masonryLoaded.value = true;
       }
     }, 100);
   }
@@ -105,7 +150,7 @@ const initMasonry = () => {
 
 const onImageLoad = (_event: Event, index: number) => {
   loadedImages.value.add(index);
-  loadedCount.value++;
+  trackImageLoad();
 
   // Trigger layout update when image loads
   if (masonryInstance.value) {
@@ -118,26 +163,23 @@ const onImageLoad = (_event: Event, index: number) => {
 };
 
 const onImageError = (index: number) => {
-  console.warn(`Failed to load image at index ${index}`);
+  console.warn(`Failed to load image at index ${index}:`, randomizedPhotos.value[index]?.src);
   loadedImages.value.add(index); // Mark as "loaded" even if failed
-  loadedCount.value++;
+  trackImageLoad();
 };
 
 // Load Masonry library dynamically
 const loadMasonryLibrary = () => {
   return new Promise<void>((resolve, reject) => {
-    if (window.Masonry) {
+    if (typeof window.Masonry !== 'undefined' && typeof window.imagesLoaded !== 'undefined') {
       resolve();
       return;
     }
-
-    // Load imagesLoaded first (dependency)
     const imagesLoadedScript = document.createElement('script');
-    imagesLoadedScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/5.0.0/imagesloaded.pkgd.min.js';
+    imagesLoadedScript.src = 'https://unpkg.com/imagesloaded@5/imagesloaded.pkgd.min.js';
     imagesLoadedScript.onload = () => {
-      // Then load Masonry
       const masonryScript = document.createElement('script');
-      masonryScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/masonry/4.2.2/masonry.pkgd.min.js';
+      masonryScript.src = 'https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js';
       masonryScript.onload = () => resolve();
       masonryScript.onerror = () => reject(new Error('Failed to load Masonry'));
       document.head.appendChild(masonryScript);
@@ -149,17 +191,20 @@ const loadMasonryLibrary = () => {
 
 // Watch for photos changes and reinitialize
 watch(() => props.photos, (newPhotos) => {
-  shuffledPhotos.value = shuffleArray([...newPhotos]);
+  randomizedPhotos.value = shuffleArray([...newPhotos]);
   loadedImages.value.clear();
-  loadedCount.value = 0;
   isLoaded.value = false;
+  setTotalImages(newPhotos.length);
 
-  nextTick(() => {
-    if (masonryInstance.value) {
-      masonryInstance.value.reloadItems();
-      masonryInstance.value.layout();
-    }
-  });
+  // Only reinitialize Masonry if it's already loaded
+  if (masonryLoaded.value && masonryInstance.value) {
+    nextTick(() => {
+      if (masonryInstance.value) {
+        masonryInstance.value.reloadItems();
+        masonryInstance.value.layout();
+      }
+    });
+  }
 }, { immediate: true, deep: true });
 
 // Resize handler
@@ -170,24 +215,43 @@ const handleResize = () => {
 };
 
 onMounted(async () => {
+  console.log('MasonryGallery mounted');
+  setTotalImages(props.photos.length);
+  isLoading.value = true;
+  masonryLoaded.value = false;
+  
   try {
+    console.log('Loading Masonry library...');
     await loadMasonryLibrary();
+    console.log('Masonry library loaded successfully');
+    
+    // Wait for the next tick to ensure DOM is ready
     await nextTick();
+    console.log('DOM ready, initializing Masonry...');
+    
+    // Set masonryLoaded to true before initializing
+    masonryLoaded.value = true;
+    await nextTick(); // Wait for DOM update
+    
     initMasonry();
+    
     AOS.init({
       once: false,
       mirror: true,
-      startEvent: 'load', // Changed from DOMContentLoaded to load
+      startEvent: 'load',
       offset: 150,
       duration: 1000,
       easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
-      anchorPlacement: 'bottom-bottom' // Animate when bottom of element is at bottom of viewport
+      anchorPlacement: 'bottom-bottom'
     });
 
     // Add resize listener
     window.addEventListener('resize', handleResize);
   } catch (error) {
     console.error('Failed to initialize Masonry:', error);
+    masonryLoaded.value = false;
+  } finally {
+    isLoading.value = false;
   }
 });
 
@@ -403,6 +467,64 @@ onUnmounted(() => {
   .loading-spinner {
     border-color: #333;
     border-top-color: #ffffff;
+  }
+}
+
+/* Fallback grid styles */
+.fallback-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.fallback-item {
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  position: relative;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.fallback-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+/* Responsive fallback grid */
+@media (max-width: 1200px) {
+  .fallback-grid {
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    max-width: 1000px;
+  }
+}
+
+@media (max-width: 900px) {
+  .fallback-grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    max-width: 800px;
+  }
+}
+
+@media (max-width: 768px) {
+  .fallback-grid {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    max-width: 600px;
+    gap: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .fallback-grid {
+    grid-template-columns: 1fr;
+    max-width: 100%;
+    gap: 8px;
   }
 }
 </style>

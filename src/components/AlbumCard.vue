@@ -4,7 +4,15 @@
       <span v-if="album.date" class="album-label specific">{{ album.date }}</span>
       <div class="album-image-container specific">
         <SkeletonLoader v-if="isLoading" />
-        <img :src="album.cover" :alt="album.title" class="album-image" loading="lazy" @load="onImageLoaded" @error="onImageError" />
+        <img 
+          :src="album.cover" 
+          :alt="album.title" 
+          class="album-image" 
+          loading="lazy"
+          decoding="async"
+          @load="onImageLoaded" 
+          @error="onImageError" 
+        />
       </div>
       <div class="album-info specific">
         <span class="album-subtitle specific">{{ album.subtitle }}</span>
@@ -23,7 +31,15 @@
       </div>
       <div class="album-image-container favorite">
         <SkeletonLoader v-if="isLoading" />
-        <img :src="album.cover" :alt="album.title" class="album-image" loading="lazy" @load="onImageLoaded" @error="onImageError" />
+        <img 
+          :src="album.cover" 
+          :alt="album.title" 
+          class="album-image" 
+          loading="lazy"
+          decoding="async"
+          @load="onImageLoaded" 
+          @error="onImageError" 
+        />
       </div>
     </div>
   </template>
@@ -31,7 +47,15 @@
     <div class="album-card general" @click="$emit('click')">
       <div class="album-image-container general">
         <SkeletonLoader v-if="isLoading" />
-        <img :src="album.cover" :alt="album.title" class="album-image general" loading="lazy" @load="onImageLoaded" @error="onImageError" />
+        <img 
+          :src="album.cover" 
+          :alt="album.title" 
+          class="album-image general" 
+          loading="lazy"
+          decoding="async"
+          @load="onImageLoaded" 
+          @error="onImageError" 
+        />
       </div>
       <div class="album-info general">
         <span class="album-subtitle general">{{ album.subtitle }}</span>
@@ -47,16 +71,23 @@
       </div>
       <div class="album-image-container nostalgic">
         <SkeletonLoader v-if="isLoading" />
-        <img :src="album.cover" :alt="album.title" class="album-image" loading="lazy" @load="onImageLoaded" @error="onImageError" />
+        <img 
+          :src="album.cover" 
+          :alt="album.title" 
+          class="album-image" 
+          loading="lazy"
+          decoding="async"
+          @load="onImageLoaded" 
+          @error="onImageError" 
+        />
       </div>
     </div>
   </template>
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import SkeletonLoader from './SkeletonLoader.vue';
-import 'aos/dist/aos.css';
 
 // Define the Album interface to match your store
 interface Album {
@@ -93,7 +124,12 @@ function onImageError() {
 }
 
 onMounted(() => {
-  // Parent component (AlbumList) handles AOS initialization.
+  // Set a timeout to hide loading state if image takes too long
+  setTimeout(() => {
+    if (isLoading.value) {
+      isLoading.value = false;
+    }
+  }, 5000);
 });
 </script>
 

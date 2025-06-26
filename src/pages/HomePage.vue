@@ -5,24 +5,29 @@
     <div class="absolute inset-0 h-full bg-gradient-to-t from-black via-black/70 to-transparent z-5"></div>
 
     <!-- Background Image Carousel -->
-    <template v-for="(image, index) in images" :key="index">
-      <transition name="fade">
-        <div v-if="currentImageIndex === index" :class="[scrolled ? 'carousel-wrapper' : '']">
-          <img :src="image" alt="Background Image" :class="[scrolled ? 'object-cover w-full h-full carousel-bg-image' : 'object-cover w-full h-full']" style="display:block;width:100%;height:100%;box-sizing:border-box;" loading="lazy" />
+    <div class="carousel-container">
+      <transition-group name="carousel-fade" mode="out-in">
+        <div v-for="(image, index) in images" :key="`image-${index}`" v-show="currentImageIndex === index" :class="[scrolled ? 'carousel-wrapper' : '']" class="carousel-slide">
+          <img :src="image" :alt="`Background Image ${index + 1}`" :class="[scrolled ? 'object-cover w-full h-full carousel-bg-image' : 'object-cover w-full h-full']" class="carousel-image" loading="eager" decoding="async" @load="onImageLoad(index)" @error="onImageError(index)" />
+          <!-- Preload next image -->
+          <img v-if="index === (currentImageIndex + 1) % images.length" :src="images[(currentImageIndex + 1) % images.length]" class="hidden" loading="lazy" decoding="async" />
         </div>
-      </transition>
-    </template>
+      </transition-group>
+    </div>
 
     <!-- Navigation Dots -->
-    <!-- absolute top-8 left-1/2 transform -translate-x-1/2 flex space-x-3 z-20 -->
     <div class="carousel-navigator-container">
-      <!-- w-3 h-3 rounded-full border-2 border-white -->
-      <button v-for="(_, index) in images" :key="index" @click="setCurrentImage(index)" class="carousel-navigator-btn transition-all duration-300" :class="{ 'active': currentImageIndex === index, '': currentImageIndex !== index }" aria-label="Select image"></button>
+      <button v-for="(_, index) in images" :key="`nav-${index}`" @click="setCurrentImage(index)" class="carousel-navigator-btn transition-all duration-300" :class="{ 'active': currentImageIndex === index }" :aria-label="`Go to slide ${index + 1}`" :aria-current="currentImageIndex === index ? 'true' : 'false'"></button>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="carousel-progress-container">
+      <div class="carousel-progress-bar" :style="{ width: `${progressPercentage}%` }"></div>
     </div>
 
     <div class="ap-main-container">
       <!-- audio player --> <!-- Background Music -->
-      <audio ref="audioPlayer" loop>
+      <audio ref="audioPlayer" loop preload="metadata">
         <source src="/audios/taylor-swift_love-story.mp3" type="audio/mpeg">
         Your browser does not support the audio element.
       </audio>
@@ -33,7 +38,7 @@
           <div class="flex items-center space-x-4">
             <!-- Album Cover - Left side -->
             <div class="flex-shrink-0">
-              <img src="/images/global/tailor-swift_love-story-cover-photo.jpg" alt="Love Story - Taylor Swift" class="ap-song-image  object-cover shadow-md" loading="lazy" />
+              <img src="/images/global/tailor-swift_love-story-cover-photo.jpg" alt="Love Story - Taylor Swift" class="ap-song-image object-cover shadow-md" loading="lazy" decoding="async" />
             </div>
 
             <!-- Song Info and Play Button Container -->
@@ -49,8 +54,8 @@
               </div>
 
               <!-- Play/Pause Button - Right -->
-              <div class="ap-btn-container bflex-shrink-0 ml-3">
-                <div @click="toggleAudio" class="w-12 h-12 rounded-full bg-[#fb5835] hover:bg-[#e04e2e] cursor-pointer group transition-all duration-300 flex items-center justify-center shadow-lg">
+              <div class="ap-btn-container flex-shrink-0 ml-3">
+                <button @click="toggleAudio" class="ap-btn-action w-12 h-12 cursor-pointer group transition-all duration-300 flex items-center justify-center shadow-lg focus:outline-none focus:ring-2 focus:ring-[#fb5835] focus:ring-opacity-50" :aria-label="isPlaying ? 'Pause music' : 'Play music'">
                   <!-- Play Icon -->
                   <svg v-if="!isPlaying" xmlns="http://www.w3.org/2000/svg" class="text-white transition-transform duration-300 group-hover:scale-110" width="25" height="25" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M8 5v14l11-7z" />
@@ -59,25 +64,26 @@
                   <svg v-else xmlns="http://www.w3.org/2000/svg" class="text-white transition-transform duration-300 group-hover:scale-110" width="25" height="25" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
                   </svg>
-                </div>
+                </button>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+
     <!-- Content Container -->
     <div class="relative h-full flex items-end justify-between p-8 md:p-12 lg:p-16 z-30">
       <div class="title-content text-white z-10">
-        <!-- <transition name="fade-caption" mode="out-in">
-        </transition> -->
-        <h5 :key="currentImageIndex" class="poppins-medium text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight leading-none">
-          {{ captions[currentImageIndex] }}
-        </h5>
+        <transition name="fade-caption" mode="out-in">
+          <h5 :key="currentImageIndex" class="poppins-medium text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight leading-none">
+            {{ captions[currentImageIndex] }}
+          </h5>
+        </transition>
       </div>
       <div class="code-content text-white z-10 max-w-md">
         <p class="text-lg md:text-xl lg:text-2xl font-light leading-relaxed">
-          <em>04122024</em>
+          <em><strong>04122024</strong> </em>
         </p>
       </div>
     </div>
@@ -95,7 +101,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref, onMounted, onUnmounted, computed } from "vue";
 import AlbumList from '../components/AlbumList.vue';
 
 const audioPlayer = ref<HTMLAudioElement | null>(null);
@@ -115,10 +121,27 @@ const captions = ref([
 
 const currentImageIndex = ref(0);
 const slideshowInterval = ref<number | null>(null);
+const progressInterval = ref<number | null>(null);
+const progressValue = ref(0);
 const SLIDESHOW_DELAY = 10000; // 10 seconds
+const PROGRESS_UPDATE_INTERVAL = 50; // Update progress every 50ms
 
 // --- SCROLL EFFECT ---
 const scrolled = ref(false);
+
+// Computed properties
+const progressPercentage = computed(() => {
+  return (progressValue.value / SLIDESHOW_DELAY) * 100;
+});
+
+// Image loading handlers
+const onImageLoad = (index: number) => {
+  console.log(`Image ${index + 1} loaded successfully`);
+};
+
+const onImageError = (index: number) => {
+  console.error(`Failed to load image ${index + 1}:`, images.value[index]);
+};
 
 const handleScroll = () => {
   scrolled.value = window.scrollY > 40;
@@ -126,22 +149,40 @@ const handleScroll = () => {
 
 const nextImage = () => {
   currentImageIndex.value = (currentImageIndex.value + 1) % images.value.length;
+  resetProgress();
 };
 
 const setCurrentImage = (index: number) => {
   currentImageIndex.value = index;
   resetSlideshowTimer();
+  resetProgress();
+};
+
+const resetProgress = () => {
+  progressValue.value = 0;
 };
 
 const startSlideshow = () => {
   if (slideshowInterval.value) return;
   slideshowInterval.value = window.setInterval(nextImage, SLIDESHOW_DELAY);
+  
+  // Start progress bar
+  progressInterval.value = window.setInterval(() => {
+    progressValue.value += PROGRESS_UPDATE_INTERVAL;
+    if (progressValue.value >= SLIDESHOW_DELAY) {
+      progressValue.value = 0;
+    }
+  }, PROGRESS_UPDATE_INTERVAL);
 };
 
 const stopSlideshow = () => {
   if (slideshowInterval.value) {
     clearInterval(slideshowInterval.value);
     slideshowInterval.value = null;
+  }
+  if (progressInterval.value) {
+    clearInterval(progressInterval.value);
+    progressInterval.value = null;
   }
 };
 
@@ -219,7 +260,7 @@ onUnmounted(() => {
   }
 
   // Clear the slideshow interval
-  pauseSlideshow();
+  stopSlideshow();
 
   window.removeEventListener('scroll', handleScroll);
 });
@@ -233,28 +274,45 @@ section {
   /* overflow-x: hidden !important; */
 }
 
-/* Image styles */
-img {
+/* Carousel container */
+.carousel-container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.carousel-slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.carousel-image {
   min-width: 100vw;
   min-height: 100vh;
   width: 100vw;
   height: 100vh;
   object-fit: cover;
+  display: block;
+  box-sizing: border-box;
 }
 
 /* Carousel transitions */
-.fade-enter-active,
-.fade-leave-active {
+.carousel-fade-enter-active,
+.carousel-fade-leave-active {
   transition: opacity 1s ease;
 }
 
-.fade-enter-from,
-.fade-leave-to {
+.carousel-fade-enter-from,
+.carousel-fade-leave-to {
   opacity: 0;
 }
 
-.fade-enter-to,
-.fade-leave-from {
+.carousel-fade-enter-to,
+.carousel-fade-leave-from {
   opacity: 1;
 }
 
@@ -291,7 +349,8 @@ img {
   border: 1px solid #ffffff;
   width: .5rem;
   height: .5rem;
-  /* margin-left: 2px; */
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 .carousel-navigator-btn.active {
@@ -300,6 +359,24 @@ img {
 
 .carousel-navigator-btn:hover {
   transform: scale(1.2);
+}
+
+/* Progress bar */
+.carousel-progress-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.2);
+  z-index: 25;
+}
+
+.carousel-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #fb5835, #e04e2e);
+  transition: width 0.05s linear;
+  border-radius: 0 2px 2px 0;
 }
 
 /* --- SCROLL EFFECT STYLES --- */
@@ -314,7 +391,7 @@ img {
 
 .ap-main-container {
   position: absolute;
-  top: 95%;
+  top: 85%;
   /*90 */
   left: 2.7%;
 }
@@ -347,6 +424,10 @@ img {
   margin-left: 5px;
   margin-top: -15px
 }
+.ap-btn-action {
+  background: transparent!important;
+  border: none;
+}
 
 /* Existing styles */
 .title-content {
@@ -357,7 +438,7 @@ img {
 
 .code-content {
   position: absolute;
-  top: 97%;
+  top: 87%;
   right: 2.7%;
 }
 
@@ -399,8 +480,8 @@ img {
   }
 
   .ap-main-container {
-    top: 88%;
-    left: 7%;
+    top: 87%;
+    left: 8%;
   }
 
   .ap-song-image {
@@ -432,8 +513,8 @@ img {
   }
 
   .code-content {
-    top: 90%;
-    right: 7.5%;
+    top: 88%;
+    right: 8.5%;
   }
 
   .code-content p {

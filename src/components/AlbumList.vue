@@ -22,6 +22,13 @@
         <AlbumCard :album="album" class="album-card" @click="goToAlbum(album)" @image-loaded="onImageLoad" />
       </div>
     </div>
+
+    <!-- Fallback Grid (if Masonry fails) -->
+    <div v-if="!isLoading && !masonryLoaded" class="fallback-grid">
+      <div v-for="album in albums" :key="album.id" class="fallback-item">
+        <AlbumCard :album="album" class="album-card" @click="goToAlbum(album)" @image-loaded="onImageLoad" />
+      </div>
+    </div>
   </div>
 </template>
 
@@ -31,6 +38,7 @@ import { useRouter } from 'vue-router';
 // import AOS from 'aos';
 // import 'aos/dist/aos.css';
 import { useGalleryStore } from '../stores/gallery';
+import { useGalleryPerformance } from '../composables/useGalleryPerformance';
 import AlbumCard from './AlbumCard.vue';
 
 // Types for Masonry
@@ -49,10 +57,12 @@ declare global {
 
 const router = useRouter();
 const galleryStore = useGalleryStore();
+const { trackImageLoad, setTotalImages } = useGalleryPerformance();
 
 const masonryContainer = ref<HTMLElement | null>(null);
 const masonryInstance = ref<MasonryInstance | null>(null);
 const isLoading = ref(true);
+const masonryLoaded = ref(false);
 const albums = ref<any[]>([]);
 
 const masonryOptions = {
@@ -84,6 +94,7 @@ const initMasonry = () => {
 };
 
 const onImageLoad = () => {
+  trackImageLoad();
   if (masonryInstance.value) {
     nextTick(() => {
       masonryInstance.value?.layout();
@@ -133,13 +144,19 @@ onMounted(async () => {
     await loadMasonryLibrary();
     setTimeout(() => {
       albums.value = [...galleryStore.albums];
+      setTotalImages(albums.value.length);
       isLoading.value = false;
+      masonryLoaded.value = true;
       nextTick(() => {
         initMasonry();
       });
     }, 800);
   } catch (error) {
     console.error("Failed to load Masonry library", error);
+    albums.value = [...galleryStore.albums];
+    setTotalImages(albums.value.length);
+    isLoading.value = false;
+    masonryLoaded.value = false;
   }
 
   window.addEventListener('resize', handleResize);
@@ -196,6 +213,10 @@ onUnmounted(() => {
   .masonry-item {
     width: 50%;
   }
+  
+  .fallback-item {
+    width: 50%;
+  }
 }
 
 @media (max-width: 768px) {
@@ -204,12 +225,20 @@ onUnmounted(() => {
   .masonry-item {
     width: 100%;
   }
+  
+  .fallback-item {
+    width: 100%;
+  }
 }
 
 @media (max-width: 480px) {
 
   .masonry-sizer,
   .masonry-item {
+    width: 100%;
+  }
+  
+  .fallback-item {
     width: 100%;
   }
 }
@@ -235,7 +264,7 @@ onUnmounted(() => {
   width: 40px;
   height: 40px;
   border: 3px solid #f3f3f3;
-  border-top: 3px solid #3b82f6;
+  border-top: 3px solid #f3f3f3;
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -248,6 +277,22 @@ onUnmounted(() => {
   100% {
     transform: rotate(360deg);
   }
+}
+
+.fallback-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 24px;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.fallback-item {
+  width: 22%;
+  padding: 0 12px;
+  box-sizing: border-box;
 }
 
 @media (prefers-color-scheme: dark) {
