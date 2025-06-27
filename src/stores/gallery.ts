@@ -79,14 +79,6 @@ const albums: Album[] = [
     cover: '/images/albums-cover-photo/enchanted-kingdom-date/2024-09-15_01-43-00z36.jpg',
   },
   {
-    id: 'milk-tea-with-my-baby',
-    category: 'specific',
-    date: 'Jun 2025',
-    title: 'Milk tea, shared laughs, and stolen sips',
-    subtitle: 'Milk Tea with My Baby',
-    cover: '/images/albums-cover-photo/milk-tea-with-my-baby/2025-06-16-2110254.png',
-  },
-  {
     id: 'his-project-on-the-rainy-day',
     category: 'specific',
     date: 'Apr 2025',

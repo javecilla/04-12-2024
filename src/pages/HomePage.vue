@@ -98,6 +98,18 @@
       <AlbumList />
     </div>
   </section>
+
+  <section class="quote-section">
+    <div class="quote-container container">
+      <h3 class="poppins-medium quote-with-images">
+        I never asked for perfect. <img src="/images/global/hh.png" alt="hh" class="inline-img heart-cursor" />
+        I asked for real. <img src="/images/global/hc.png" alt="hc" class="inline-img heart-cursor" />
+        And you gave me both, <img src="/images/global/hup.png" alt="hup" class="inline-img heart-cursor" /> in your own way.
+      </h3>
+
+      <!-- <img src="/images/global/t.png" alt="t"/> -->
+    </div>
+  </section>
 </template>
 
 <script lang="ts" setup>
@@ -450,7 +462,6 @@ section {
   max-width: 800px;
   margin: 50px auto 0 auto;
 }
-
 .header-title-container h1 {
   font-size: 6.5rem;
   font-weight: 500;
@@ -470,6 +481,62 @@ section {
 
 .album-container {
   margin-left: 55px;
+}
+
+/*quote section styles */
+.quote-section {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: visible;
+  position: relative;
+}
+.quote-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  max-width: 800px;
+  margin: 50px auto 0 auto;
+}
+
+.quote-with-images {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.2em;
+  justify-content: center;
+  text-align: center;
+  line-height: .90;
+  font-size: 2.2rem;
+}
+
+.quote-with-images img.inline-img {
+  width: 2.2em;
+  height: 2.2em;
+  object-fit: cover;
+  border-radius: 0.2em;
+  vertical-align: middle;
+  margin: 0 0.1em;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: transform 0.25s cubic-bezier(0.4, 0.2, 0.2, 1);
+}
+.quote-with-images img.inline-img:nth-of-type(1) {
+  transform: rotate(-7deg);
+}
+
+.quote-with-images img.inline-img:nth-of-type(2) {
+  transform: rotate(5deg);
+}
+
+.quote-with-images img.inline-img:nth-of-type(3) {
+  transform: rotate(-3deg);
+}
+
+.quote-with-images img.inline-img:hover {
+  transform: scale(1.12) rotate(-7deg);
+  transition: transform 0.25s cubic-bezier(0.4, 0.2, 0.2, 1);
+  z-index: 1;
 }
 
 @media only screen and (max-width: 480px) {
@@ -522,16 +589,32 @@ section {
   }
 
   .header-title-container {
-    max-width: 300px;
+    max-width: 350px;
   }
 
   .header-title-container h1 {
-    font-size: 2.5rem;
+    font-size: 3rem;
   }
 
   .album-container {
     margin-left: -32px;
     /* margin-right: 20px; */
+  }
+
+  .quote-container {
+    max-width: 370px;
+  }
+
+  .quote-with-images {
+    gap: 0.2em;
+    line-height: .90;
+    font-size: 2rem;
+  }
+
+  .quote-with-images img.inline-img {
+    width: 1.3em;
+    height: 1.3em;
+    margin: 0 0.1em;
   }
 }
 </style>

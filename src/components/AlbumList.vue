@@ -264,7 +264,7 @@ onUnmounted(() => {
   width: 40px;
   height: 40px;
   border: 3px solid #f3f3f3;
-  border-top: 3px solid #f3f3f3;
+  border-top: 3px solid #ffffff;
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -297,12 +297,12 @@ onUnmounted(() => {
 
 @media (prefers-color-scheme: dark) {
   .loading-text {
-    color: #9ca3af;
+    color: #999;
   }
 
   .loading-spinner {
-    border-color: #374151;
-    border-top-color: #60a5fa;
+    border-color: #333;
+      border-top-color: #ffffff;
   }
 }
 </style>

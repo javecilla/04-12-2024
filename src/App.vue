@@ -1,3 +1,29 @@
+<template>
+  <div class="min-h-screen bg-[#000000] text-white">
+    <!-- Loading Overlay -->
+    <Transition enter-active-class="transition-opacity duration-300" leave-active-class="transition-opacity duration-500" enter-from-class="opacity-0" leave-to-class="opacity-0">
+      <div v-if="isLoading" class="fixed inset-0 bg-[#000000] z-50 flex items-center justify-center">
+        <BookLoader />
+      </div>
+    </Transition>
+
+    <!-- Main Content with Navbar -->
+    <div v-show="!isLoading">
+      <Transition enter-active-class="transition-opacity duration-500" enter-from-class="opacity-0" enter-to-class="opacity-100">
+        <div v-show="!isLoading">
+          <!-- Navbar -->
+          <!-- <Navbar /> -->
+
+          <!-- Main Content -->
+          <main class="pt-20">
+            <router-view />
+          </main>
+        </div>
+      </Transition>
+    </div>
+  </div>
+</template>
+
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue';
 import BookLoader from './components/BookLoader.vue';
@@ -26,32 +52,6 @@ onMounted(() => {
   }, 3000);
 });
 </script>
-
-<template>
-  <div class="min-h-screen bg-[#000000] text-white">
-    <!-- Loading Overlay -->
-    <Transition enter-active-class="transition-opacity duration-300" leave-active-class="transition-opacity duration-500" enter-from-class="opacity-0" leave-to-class="opacity-0">
-      <div v-if="isLoading" class="fixed inset-0 bg-[#000000] z-50 flex items-center justify-center">
-        <BookLoader />
-      </div>
-    </Transition>
-
-    <!-- Main Content with Navbar -->
-    <div v-show="!isLoading">
-      <Transition enter-active-class="transition-opacity duration-500" enter-from-class="opacity-0" enter-to-class="opacity-100">
-        <div v-show="!isLoading">
-          <!-- Navbar -->
-          <!-- <Navbar /> -->
-
-          <!-- Main Content -->
-          <main class="pt-20">
-            <router-view />
-          </main>
-        </div>
-      </Transition>
-    </div>
-  </div>
-</template>
 
 <style>
 /* Remove any loader styling from components that previously had it */
