@@ -68,27 +68,48 @@ const albums = ref<any[]>([]);
 const masonryOptions = {
   itemSelector: '.masonry-item',
   columnWidth: '.masonry-sizer',
-  gutter: 24, // Matches the 1.5rem gap
-  percentPosition: true,
+  gutter: 45,
+  percentPosition: false,
   resize: true,
-  initLayout: false,
-  //fitWidth: true
+  initLayout: true,
+  fitWidth: true
 };
 
 const initMasonry = () => {
   if (!masonryContainer.value || !window.Masonry) return;
 
+  // Destroy existing instance if any
+  if (masonryInstance.value) {
+    masonryInstance.value.destroy();
+  }
+
+  // Ensure container has proper dimensions before initializing
+  if (masonryContainer.value.offsetWidth === 0) {
+    // Container not yet sized, wait a bit more
+    setTimeout(() => {
+      initMasonry();
+    }, 50);
+    return;
+  }
+
   masonryInstance.value = new window.Masonry(masonryContainer.value, masonryOptions);
 
+  // Use imagesLoaded to ensure all images are loaded before layout
   const imgLoad = window.imagesLoaded(masonryContainer.value, () => {
     if (masonryInstance.value) {
-      masonryInstance.value.layout();
+      // Force layout recalculation after images load
+      nextTick(() => {
+        masonryInstance.value?.layout();
+      });
     }
   });
 
+  // Handle progress for better layout updates
   imgLoad.on('progress', () => {
     if (masonryInstance.value) {
-      masonryInstance.value.layout();
+      nextTick(() => {
+        masonryInstance.value?.layout();
+      });
     }
   });
 };
@@ -98,7 +119,6 @@ const onImageLoad = () => {
   if (masonryInstance.value) {
     nextTick(() => {
       masonryInstance.value?.layout();
-      //AOS.refresh();
     });
   }
 };
@@ -142,15 +162,29 @@ onMounted(async () => {
 
   try {
     await loadMasonryLibrary();
+    
+    // Load albums first
+    albums.value = [...galleryStore.albums];
+    setTotalImages(albums.value.length);
+    isLoading.value = false;
+    masonryLoaded.value = true;
+    
+    // Wait for DOM to be fully rendered
+    await nextTick();
+    
+    // Wait for container to be properly sized
+    await new Promise(resolve => setTimeout(resolve, 100));
+    
+    // Initialize Masonry
+    initMasonry();
+    
+    // Force layout recalculation after everything is loaded
     setTimeout(() => {
-      albums.value = [...galleryStore.albums];
-      setTotalImages(albums.value.length);
-      isLoading.value = false;
-      masonryLoaded.value = true;
-      nextTick(() => {
-        initMasonry();
-      });
-    }, 800);
+      if (masonryInstance.value) {
+        masonryInstance.value.layout();
+      }
+    }, 300);
+    
   } catch (error) {
     console.error("Failed to load Masonry library", error);
     albums.value = [...galleryStore.albums];
@@ -175,6 +209,7 @@ onUnmounted(() => {
   width: 100%;
   padding: 2rem;
   box-sizing: border-box;
+  margin-left: -35px;
 }
 
 .header-section {
@@ -191,14 +226,13 @@ onUnmounted(() => {
 }
 
 .masonry-sizer {
-  width: 22%;
+  width: 280px;
 }
 
 .masonry-item {
-  width: 22%;
-  padding: 0 12px;
-  box-sizing: border-box;
-  margin-bottom: 24px;
+  width: 280px;
+  margin-bottom: 13px;
+  /* Remove horizontal padding - let Masonry handle gutters */
 }
 
 .album-card {
@@ -207,35 +241,42 @@ onUnmounted(() => {
 }
 
 /* Responsive Breakpoints */
-@media (max-width: 992px) {
-
+@media (max-width: 1200px) {
   .masonry-sizer,
   .masonry-item {
-    width: 50%;
+    width: 280px;
+  }
+}
+
+@media (max-width: 992px) {
+  .masonry-sizer,
+  .masonry-item {
+    width: 240px;
   }
   
   .fallback-item {
-    width: 50%;
+    width: calc(50% - 12px);
   }
 }
 
 @media (max-width: 768px) {
-
   .masonry-sizer,
   .masonry-item {
-    width: 100%;
+    width: 320px;
   }
   
   .fallback-item {
-    width: 100%;
+    width: calc(50% - 12px);
   }
 }
 
 @media (max-width: 480px) {
-
+  .album-list-container {
+    margin-left: -1px;
+  }
   .masonry-sizer,
   .masonry-item {
-    width: 100%;
+    width: 320px;
   }
   
   .fallback-item {
